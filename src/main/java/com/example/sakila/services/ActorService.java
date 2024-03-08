@@ -25,6 +25,11 @@ public class ActorService implements IActorService {
     @Autowired
     FilmRepository filmRepository;
 
+    public ActorService(ActorRepository actorRepository, FilmRepository filmRepository) {
+        this.actorRepository = actorRepository;
+        this.filmRepository = filmRepository;
+    }
+
     public List<Actor> getActors() {
 
         return actorRepository.findAll();
@@ -73,10 +78,13 @@ public class ActorService implements IActorService {
     }
 
     public void deleteActor(Short id) {
-        actorRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such actor."));
+        final boolean actorExists = actorRepository.existsById(id);
 
-        actorRepository.deleteById(id);
+        if (actorExists) {
+            actorRepository.deleteById(id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such actor.");
+        }
     }
 
     public List<PartialFilm> getFilmsForActor(Short id) {

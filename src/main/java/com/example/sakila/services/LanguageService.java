@@ -46,9 +46,12 @@ public class LanguageService implements ILanguageService {
     }
 
     public void deleteLanguage(Short id) {
-        languageRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such language."));
+        final boolean languageExists = languageRepository.existsById(id);
 
-        languageRepository.deleteById(id);
+        if (languageExists) {
+            languageRepository.deleteById(id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such language.");
+        }
     }
 }

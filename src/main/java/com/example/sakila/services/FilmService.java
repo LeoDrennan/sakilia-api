@@ -152,10 +152,13 @@ public class FilmService implements IFilmService {
     }
 
     public void deleteFilm(Short id) {
-        filmRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such film."));
+        final boolean filmExists = filmRepository.existsById(id);
 
-        filmRepository.deleteById(id);
+        if (filmExists) {
+            filmRepository.deleteById(id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such film.");
+        }
     }
 
     public List<PartialActor> getActorsForFilm(Short id) {

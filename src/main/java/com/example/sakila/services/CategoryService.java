@@ -46,9 +46,12 @@ public class CategoryService implements ICategoryService {
     }
 
     public void deleteCategory(Short id) {
-        categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No such category."));
+        final boolean categoryExists = categoryRepository.existsById(id);
 
-        categoryRepository.deleteById(id);
+        if (categoryExists) {
+            categoryRepository.deleteById(id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such category.");
+        }
     }
 }
